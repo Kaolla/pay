@@ -13,11 +13,13 @@ module Pay
         raise Error, e.message
       end
 
-      def stripe_refund!(amount_to_refund)
-        ::Stripe::Refund.create(
+      def stripe_refund!(amount_to_refund, options)
+        args = {
           charge: processor_id,
           amount: amount_to_refund
-        )
+        }.merge(options)
+
+        ::Stripe::Refund.create(args)
 
         update(amount_refunded: amount_to_refund)
       rescue ::Stripe::StripeError => e
